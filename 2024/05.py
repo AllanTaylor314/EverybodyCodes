@@ -1,15 +1,12 @@
-from collections import Counter
-from itertools import zip_longest
-
-with open("everybody_codes_e2024_q5_p2.txt") as f:
+with open("everybody_codes_e2024_q5_p3.txt") as f:
     lines = f.read().splitlines()
 nums = [list(map(int,line.split())) for line in lines]
 cols = list(map(list,zip(*nums)))
 
-seen_numbers = Counter()
 result = None
 r = 0
-while seen_numbers[result] < 2024:
+highest = 0
+while True:
     clapper_column = r%len(cols)
     clapper = cols[clapper_column].pop(0)
     target_col = cols[(clapper_column+1)%len(cols)]
@@ -18,8 +15,7 @@ while seen_numbers[result] < 2024:
         position = 2*len(target_col) - position
     target_col.insert(position,clapper)
     result = int("".join(str(col[0]) for col in cols))
-    seen_numbers[result] += 1
+    if result > highest:
+        highest = result
+        print(highest)
     r += 1
-print(result*r)
-# Not 10111010 (wrong length, right first digit)
-# Missed the multiply by num rounds
