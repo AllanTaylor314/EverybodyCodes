@@ -81,7 +81,7 @@ print("".join(sorted(tracks, reverse=True, key=lambda k:score(apply_track(tracks
 opps_plan ,= load_file(3).values()
 track = parse_track(P3_TRACK) * 2024
 score_to_beat = score(apply_track(opps_plan))
-candidates = set(map("".join,permutations("+++++---===")))
+candidates = set(map("".join,permutations(opps_plan)))
 soln3 = 0
 for candidate in candidates:
     candidate_score = score(apply_track(candidate))
