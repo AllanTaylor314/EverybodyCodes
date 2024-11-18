@@ -58,14 +58,6 @@ def containing_regions(row,col):
     cs = range(scol,scol+8),range(scol-6,scol+2)
     return [(r,c) for r in rs for c in cs if (row in r and col in c and r[0]>=0 and r[-1]<len(wall) and c[0]>=0 and c[-1]<len(wall[0]))]
 
-# Validate regions
-for i,row in enumerate(wall):
-    for j,c in enumerate(row):
-        for rs,cs in containing_regions(i,j):
-            [wall[r][c] for r in rs for c in cs]
-            assert i in rs
-            assert j in cs
-
 def rc_index_region(region):
     rows, cols = map(list,region)
     row_indices = [(i,j) for i in rows[2:6] for j in cols[:2]+cols[-2:]]
@@ -127,7 +119,6 @@ for i,j in question_marks:
         if not solvable:
             for m,n in rc_index2_region(region):
                 wall[m][n] = "@" # Ignore the region
-        print(row_letters, col_letters, solvable)
         # input()
 
 
@@ -160,8 +151,6 @@ while q:
         changed = True
     except ValueError: # Not solvable?
         if "?" in row_letters|col_letters:
-            # print(r,c,row_letters,col_letters)
-            print(f"{r,c}: {remaining_row}, {remaining_col}")
             if "?" not in remaining_row and len(remaining_row) == 1:
                 wall[r][c] ,= remaining_row
                 try:
