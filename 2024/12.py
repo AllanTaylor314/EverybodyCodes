@@ -5,11 +5,14 @@ def load_file(part):
         return f.read().splitlines()
 
 targets = set()
+hard_targets = set()
 catapults = {}
-for i,line in enumerate(reversed(load_file(1))):
+for i,line in enumerate(reversed(load_file(2))):
     for j,c in enumerate(line):
         if c == "T":
             targets.add((i,j))
+        elif c == "H":
+            hard_targets.add((i,j))
         elif c.isalpha():
             catapults[c] = (i,j)
 
@@ -38,6 +41,8 @@ def plot(path=()):
             point = "."
             if (i,j) in targets:
                 point = "T"
+            if (i,j) in hard_targets:
+                point = "H"
             if (i,j) in catapults.values():
                 point, = (k for k,v in catapults.items() if v == (i,j))
             if (i,j) in path:
@@ -47,14 +52,14 @@ def plot(path=()):
     print("="*(max_j+1))
 
 def all_targets(path):
-    return [p for p in path if p in targets]
+    return [p for p in path if p in targets or p in hard_targets]
 
-def score(catapult, power):
-    return (ord(catapult)-64) * power
+def score(catapult, power, is_hard=False):
+    return (ord(catapult)-64) * power * (2 if is_hard else 1)
 assert score("B", 5) == 10
 
 viable_shots = {}
-for n in range(11):
+for n in range(200):
     for catapult in catapults:
         path = flight_path(catapult, n)
         if ts := all_targets(path):
@@ -62,4 +67,4 @@ for n in range(11):
 
 hittable_locations = [p for v in viable_shots.values() for p in v]
 assert len(hittable_locations) == len(set(hittable_locations))
-print(sum(score(c,p) for (c,p),v in viable_shots.items() for _ in v))
+print(sum(score(c,p,t in hard_targets) for (c,p),v in viable_shots.items() for t in v))
