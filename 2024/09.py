@@ -1,6 +1,4 @@
 from functools import cache
-import sys
-sys.setrecursionlimit(2**31-1)
 
 with open(f"everybody_codes_e2024_q09_p1.txt") as f:
     numbers = list(map(int,f.read().splitlines()))
