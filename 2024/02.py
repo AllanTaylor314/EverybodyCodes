@@ -9,9 +9,7 @@ words = top.split(":")[1].split(",")
 total = 0
 text = " ".join(lines)
 words.extend([w[::-1] for w in words])
-print(sum((text.count(word)*len(word) for word in words)))
-# not 9722 (doesn't start with 9)
-# Didn't account for overlap
+
 def proc_line(line):
     locations = [False] * len(line)
     for i in range(len(line)):
@@ -43,5 +41,3 @@ for j,enil in enumerate(senil):
                 for n in range(l):
                     grid[i+n][j] = True
 print(sum(map(sum,grid)))
-# not 11328 (correct length, correct first digit)
-# It loops around! I missed the edge seam
