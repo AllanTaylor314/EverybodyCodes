@@ -22,13 +22,14 @@ for part in (1,2,3):
 
     costs = {p:1e80 for p in grid}
     costs[end] = 0
-    updated = True
-    while updated:
-        updated = False
-        for point in costs:
+    to_update = set(valid_adjacent_spaces(end))
+    while to_update:
+        new_update = set()
+        for point in to_update:
             adjs = valid_adjacent_spaces(point)
             new_cost = min([costs[adj] + min_transition(grid[point],grid[adj])+1 for adj in adjs] or [1e8])
             if new_cost < costs[point]:
                 costs[point] = new_cost
-                updated = True
+                new_update.update(adjs)
+        to_update = new_update
     print(min(costs[start] for start in starts))
