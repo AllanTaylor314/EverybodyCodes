@@ -5,17 +5,6 @@ def load_file(part):
 def add_points(*points):
     return tuple(map(sum,zip(*points)))
 
-moves ,= load_file(1)
-height = 0
-heights = []
-for d,l in moves:
-    if d == "U":
-        height += l
-    elif d == "D":
-        height -= l
-    heights.append(height)
-print(max(heights))
-
 # U = +i, D = -i, L = -j, R = +j, F = +k
 direction_mapping = {
     "U":(+1,0,0),
@@ -25,39 +14,36 @@ direction_mapping = {
     "F":(0,0,+1),
     "B":(0,0,-1),
 }
-locations = set()
-for line in load_file(2):
-    location = (0,0,0)
-    for direction,length in line:
-        for _ in range(length):
-            location = add_points(location,direction_mapping[direction])
-            locations.add(location)
-print(len(locations))
 
-locations = set()
-leaves = []
-for line in load_file(3):
-    location = (0,0,0)
-    for direction,length in line:
-        for _ in range(length):
-            location = add_points(location,direction_mapping[direction])
-            locations.add(location)
-    leaves.append(location)
+for part in (1,2,3):
+    locations = set()
+    leaves = []
+    for line in load_file(part):
+        location = (0,0,0)
+        for direction,length in line:
+            for _ in range(length):
+                location = add_points(location,direction_mapping[direction])
+                locations.add(location)
+        leaves.append(location)
+    if part == 1:
+        print(max(locations)[0])
+    elif part == 2:
+        print(len(locations))
 
 trunk = {(i,0,0) for i in range(max(locations)[0]+1) if (i,0,0) in locations}
-
 location_costs = {leaf:{location:0 if location == leaf else 1e8 for location in locations} for leaf in leaves}
-
 for leaf, costs in location_costs.items():
-    changed = True
-    while changed:
-        changed = False
-        for loc in costs:
-            neighbour_costs = [costs[p] for delta in direction_mapping.values() if (p:=add_points(loc,delta)) in costs]
+    to_update = locations
+    while to_update:
+        new_update = set()
+        for loc in to_update:
+            neighbours = [p for delta in direction_mapping.values() if (p:=add_points(loc,delta)) in costs]
+            neighbour_costs = map(costs.get,neighbours)
             new_cost = min(neighbour_costs) + 1
             if new_cost < costs[loc]:
                 costs[loc] = new_cost
-                changed = True
+                new_update.update(neighbours)
+        to_update = new_update
 
 
 def murkiness(tap_location):
