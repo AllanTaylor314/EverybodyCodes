@@ -25,8 +25,4 @@ for part in [1,2,3]:
             depths[i][j] = new_depth(i,j)
         prev_total = total
         total = sum(map(sum,depths))
-    print(*depths,sep="\n")
     print(total)
-
-# Part 3: not 11405 (wrong length and first char)
-# Wasn't handling edges correctly (was completely ignoring, rather than treating as .)
