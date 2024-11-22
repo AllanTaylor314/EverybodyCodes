@@ -5,6 +5,24 @@ def load_file(part):
 def add_points(*points):
     return tuple(map(sum,zip(*points)))
 
+def scale_point(point, scale):
+    return tuple(map(scale.__mul__,point))
+
+def create_mcfunction(filename, data, do_leaves = False):
+    with open(filename, "w") as f:
+        leaves = []
+        for line in data:
+            location = (0,0,0)
+            for direction,length in line:
+                y0,x0,z0 = add_points(location,direction_mapping[direction])
+                y1,x1,z1 = location = add_points(location,scale_point(direction_mapping[direction],length))
+                axis = axis_mapping[direction]
+                print(f"fill ~{x0} ~{y0} ~{z0} ~{x1} ~{y1} ~{z1} minecraft:oak_log[{axis=}]",file=f)
+            leaves.append(location)
+        if do_leaves:
+            for y1,x1,z1 in leaves:
+                print(f"setblock ~{x1} ~{y1} ~{z1} minecraft:oak_leaves",file=f)
+
 # U = +i, D = -i, L = -j, R = +j, F = +k
 direction_mapping = {
     "U":(+1,0,0),
@@ -13,6 +31,15 @@ direction_mapping = {
     "L":(0,-1,0),
     "F":(0,0,+1),
     "B":(0,0,-1),
+}
+
+axis_mapping = {
+    "U":"y",
+    "D":"y",
+    "R":"x",
+    "L":"x",
+    "F":"z",
+    "B":"z",
 }
 
 for part in (1,2,3):
@@ -64,3 +91,9 @@ print(min(map(murkiness,trunk)))
 # zs, xs, ys = zip(*leaves)
 # ax.scatter(xs,ys,zs,color="g")
 # plt.show()
+
+from pathlib import Path
+datapack = Path(R"C:\Users\allan\AppData\Roaming\.minecraft\saves\Everybody Codes 2024\datapacks\autoec\data\q14\function")
+create_mcfunction(datapack/"part1.mcfunction",load_file(1))
+create_mcfunction(datapack/"part2.mcfunction",load_file(2))
+create_mcfunction(datapack/"part3.mcfunction",load_file(3),True)
