@@ -11,6 +11,16 @@ def new_depth(i,j):
             dep = min(dep,depths[ni][nj])
     return dep + 1
 
+from pathlib import Path
+datapack = Path(R"C:\Users\allan\AppData\Roaming\.minecraft\saves\Everybody Codes 2024\datapacks\autoec\data\q03\function")
+
+def create_mcfunction(filename, data):
+    with open(filename, "w") as f:
+        for i,row in enumerate(depths):
+            for j,depth in enumerate(row):
+                if depth:
+                    print(f"fill ~{i} ~-1 ~{j} ~{i} ~{-depth} ~{j} minecraft:water",file=f)
+
 for part in [1,2,3]:
     if part == 3:
         ADJ += ADDJ
@@ -27,6 +37,7 @@ for part in [1,2,3]:
         total = sum(map(sum,depths))
     print(*depths,sep="\n")
     print(total)
+    create_mcfunction(datapack/f"part{part}.mcfunction",depths)
 
 # Part 3: not 11405 (wrong length and first char)
 # Wasn't handling edges correctly (was completely ignoring, rather than treating as .)
