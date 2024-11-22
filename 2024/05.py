@@ -39,14 +39,11 @@ cols = load_file(3)
 r = 0
 highest = 0
 states = set()
-while True:
+while (state := get_state(r, cols)) not in states:
+    states.add(state)
     step(r, cols)
     result = int("".join(str(col[0]) for col in cols))
     if result > highest:
-        print(end=f"\r{(highest:=result)}")
+        highest = result
     r += 1
-    state = get_state(r, cols)
-    if state in states:
-        break
-    states.add(state)
-print()
+print(highest)
