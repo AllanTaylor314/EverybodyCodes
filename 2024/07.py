@@ -79,7 +79,7 @@ track = parse_track(P2_TRACK) * 10
 print("".join(sorted(tracks, reverse=True, key=lambda k:score(apply_track(tracks[k])))))
 
 opps_plan ,= load_file(3).values()
-track = parse_track(P3_TRACK) * 2024
+track = parse_track(P3_TRACK) * 11
 score_to_beat = score(apply_track(opps_plan))
 candidates = set(map("".join,permutations(opps_plan)))
 soln3 = 0
