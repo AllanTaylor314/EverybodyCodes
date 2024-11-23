@@ -11,60 +11,16 @@ def load_file(part):
 def add_points(*points):
     return tuple(map(sum,zip(*points)))
 
-def cost_of_path(path):
-    """Start -> herb -> herb -> start"""
-    return sum(all_costs[a][b] for a,b in zip(path,path[1:]))
-
-def gen_all_combos(list_of_lists, prefix=None):
-    if prefix is None:
-        prefix = []
-    if list_of_lists:
-        list0, *other_lists = list_of_lists
-        for value in list0:
-            yield from gen_all_combos(other_lists, prefix + [value])
-    else:
-        yield prefix
-
 @cache
-def minmax_distance_between_herbs(herb1, herb2):
-    gen = (all_costs[loc1][loc2] for loc1 in herb_locations[herb1] for loc2 in herb_locations[herb2])
-    hi = lo = next(gen)
-    for cost in gen:
-        if cost > hi:
-            hi = cost
-        if cost < lo:
-            lo = cost
-    return lo, hi
-
-@cache
-def minmax_order(order):
-    mini = maxi = 0
-    for a,b in zip(order,order[1:]):
-        lo, hi = minmax_distance_between_herbs(a,b)
-        mini += lo
-        maxi += hi
-    return mini, maxi
-
-@cache
-def min_cost_order(current,remaining_herbs,end=None): # and back to start
-    if end is None:
-        end = start
+def min_cost_order(current,remaining_herbs,end):
     if not remaining_herbs:
         return all_costs[current][end]
     next_herb = remaining_herbs[0]
     next_locations = herb_locations[next_herb]
     return min(all_costs[current][next_loc]+min_cost_order(next_loc,remaining_herbs[1:],end) for next_loc in next_locations)
 
-def gen_viable_paths():
-    herbs = list(herb_locations)
-    limit = 1e8
-    for herb_order in ["ABCDEGHIJKNOPQR"]: # GHIKEDCBAJRPONQ
-        order = [[start]] + [herb_locations[herb] for herb in herb_order] + [[start]]
-        yield from gen_all_combos(order)
-
-for part in (3,):
-    minmax_distance_between_herbs.cache_clear()
-    minmax_order.cache_clear()
+for part in (1,2,3):
+    min_cost_order.cache_clear()
     grid = load_file(part)
     start = min(grid)
     herb_locations = defaultdict(list)
@@ -89,13 +45,12 @@ for part in (3,):
                     costs[loc] = new_cost
                     new_update.update(neighbours)
             to_update = new_update
-    
-    # print(min(map(cost_of_path,gen_viable_paths())))
-
+    if part < 3:
+        print(min(min_cost_order(start,perm,start) for perm in permutations(herb_locations)))
 
 mid_e = max(herb_locations["E"])
 mid_r = min(herb_locations["R"])
-ghijk = min(min_cost_order(start,perm,start) for perm in permutations("EGHIJKR"))
 abcde = min(min_cost_order(mid_e,perm,mid_e) for perm in permutations("ABCDE"))
-ponqr = min(min_cost_order(mid_r,perm,mid_r) for perm in permutations("PONQR"))
-print(ghijk+abcde+ponqr)
+ghijk = min(min_cost_order(start,perm,start) for perm in permutations("EGHIJKR"))
+nopqr = min(min_cost_order(mid_r,perm,mid_r) for perm in permutations("NOPQR"))
+print(abcde+ghijk+nopqr)
