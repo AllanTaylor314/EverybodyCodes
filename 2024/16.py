@@ -50,27 +50,12 @@ wheels = [tuple(w[::2] for w in wheel) for wheel in wheels]
 
 
 @cache
-def min_score(wheel_offset=0,pull_number=0):
-    if pull_number == 257:
-        return 0
+def maxmin_score(wheel_offset=0,pull_number=0,pulls_remaining=256):
     line = "".join(wheel[(pull_number*dist+wheel_offset)%len(wheel)] for dist,wheel in zip(wheel_distances, wheels))
-    score = sum(i-2 for i in Counter(line).values() if i>2)
-    if pull_number == 0:
-        score = 0 # doesn't count
-    return score + min(min_score(wheel_offset-1,pull_number+1),
-                       min_score(wheel_offset,pull_number+1),
-                       min_score(wheel_offset+1,pull_number+1))
+    score = sum(i-2 for i in Counter(line).values() if i>2) if pull_number else 0
+    if pulls_remaining:
+        maxs, mins = zip(*(maxmin_score(wheel_offset+i,pull_number+1,pulls_remaining-1) for i in (-1,0,1)))
+        return score + max(maxs), score + min(mins)
+    return score, score
 
-@cache
-def max_score(wheel_offset=0,pull_number=0):
-    if pull_number == 257:
-        return 0
-    line = "".join(wheel[(pull_number*dist+wheel_offset)%len(wheel)] for dist,wheel in zip(wheel_distances, wheels))
-    score = sum(i-2 for i in Counter(line).values() if i>2)
-    if pull_number == 0:
-        score = 0 # doesn't count
-    return score + max(max_score(wheel_offset-1,pull_number+1),
-                       max_score(wheel_offset,pull_number+1),
-                       max_score(wheel_offset+1,pull_number+1))
-
-print(max_score(), min_score())
+print(*maxmin_score())
