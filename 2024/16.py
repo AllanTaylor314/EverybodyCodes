@@ -44,3 +44,33 @@ for i in range(1,loop_size+1):
     if i == loop_remainder:
         score_rem = score_loop
 print(score_loop * loop_count + score_rem)
+
+wheel_distances, wheels = load_file(3)
+wheels = [tuple(w[::2] for w in wheel) for wheel in wheels]
+
+
+@cache
+def min_score(wheel_offset=0,pull_number=0):
+    if pull_number == 257:
+        return 0
+    line = "".join(wheel[(pull_number*dist+wheel_offset)%len(wheel)] for dist,wheel in zip(wheel_distances, wheels))
+    score = sum(i-2 for i in Counter(line).values() if i>2)
+    if pull_number == 0:
+        score = 0 # doesn't count
+    return score + min(min_score(wheel_offset-1,pull_number+1),
+                       min_score(wheel_offset,pull_number+1),
+                       min_score(wheel_offset+1,pull_number+1))
+
+@cache
+def max_score(wheel_offset=0,pull_number=0):
+    if pull_number == 257:
+        return 0
+    line = "".join(wheel[(pull_number*dist+wheel_offset)%len(wheel)] for dist,wheel in zip(wheel_distances, wheels))
+    score = sum(i-2 for i in Counter(line).values() if i>2)
+    if pull_number == 0:
+        score = 0 # doesn't count
+    return score + max(max_score(wheel_offset-1,pull_number+1),
+                       max_score(wheel_offset,pull_number+1),
+                       max_score(wheel_offset+1,pull_number+1))
+
+print(max_score(), min_score())
