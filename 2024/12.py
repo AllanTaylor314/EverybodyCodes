@@ -77,31 +77,21 @@ for part in [1,2]:
 catapults = {"A":(0,0),"B":(1,0),"C":(2,0)}
 meteor_locations = [tuple(map(int,line.split()))[::-1] for line in load_file(3)]
 
-def gen_meteor_path(start):
-    i,j = start
-    while i >= 0:
-        yield i,j
-        i -= 1
-        j -= 1
-
-reachable_area = defaultdict(list)
-for catapult in "ABC":
-    for power in range(1,4010):
-        for time, location in enumerate(flight_path(catapult,power)):
-            if not any(c==catapult for c,p,t in reachable_area[location]):
-                reachable_area[location].append((catapult,power,time))
-
-print(f"Found {len(reachable_area)} reachable locations")
+def setting_for_location(i,j):
+    if (i,j) == (3,2): # One weird case
+        return "C", 1
+    if j <= i:
+        return "ABC"[i-j], j
+    if i > j//2:
+        return "A", i
+    p, c = divmod(i+j,3)
+    return "ABC"[c], p
 
 total_cost = 0
 for meteor in meteor_locations:
-    for time,m_loc in enumerate(gen_meteor_path(meteor)):
-        options = [(c,p) for c,p,t in reachable_area[m_loc] if t <= time]
-        if options:
-            cost = min(score(c,p) for c,p in options)
-            print(meteor, time, cost)
-            total_cost += cost
-            break
-    else:
-        raise ValueError(f"Nothing found for {meteor}")
+    mi, mj = meteor
+    time = (mj+1)//2
+    mi -= time
+    mj -= time
+    total_cost += score(*setting_for_location(mi, mj))
 print(total_cost)
