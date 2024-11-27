@@ -1,6 +1,5 @@
 from itertools import zip_longest, count
-from operator import mul
-from functools import reduce, cache
+from functools import cache
 from collections import Counter
 from math import lcm
 
@@ -13,9 +12,6 @@ def load_file(part):
     wheels_transpose = [[line[i:i+3].strip() for i in range(0,len(line),4)] for line in remainder]
     wheels = [tuple(filter(None,wheel)) for wheel in zip_longest(*wheels_transpose,fillvalue="")]
     return wheel_distances, wheels
-
-def get_line(wheel_positions, wheels):
-    return " ".join(wheel[i] for i,wheel in zip(wheel_positions,wheels))
 
 def get_ith_line(i, wheels):
     return " ".join(wheel[i%len(wheel)] for wheel in wheels)
