@@ -10,7 +10,7 @@ def adjacent_spaces(point):
     return [(i-1,j-1),(i-1,j),(i-1,j+1),(i,j+1),(i+1,j+1),(i+1,j),(i+1,j-1),(i,j-1)]
 
 def flatten(grid):
-    return "".join(map("".join,grid))
+    return "\n".join(map("".join,grid))
 
 def rotate(grid, point, direction):
     adj = adjacent_spaces(point)
@@ -24,11 +24,12 @@ def rotate(grid, point, direction):
     for (i,j),c in zip(adj,vals):
         grid[i][j] = c
 
-pattern,_,*lines = load_file(1)
+pattern,_,*lines = load_file(2)
 grid = [list(line) for line in lines]
 rotation_points = [(i,j) for i in range(1,len(grid)-1) for j in range(1,len(grid[i])-1)]
 
-for d, p in zip(cycle(pattern), rotation_points):
-    rotate(grid, p, d)
+for _ in range(100):
+    for d, p in zip(cycle(pattern), rotation_points):
+        rotate(grid, p, d)
 
-print(flatten(grid).lstrip("+>").rstrip("<+"))
+print(flatten(grid))
