@@ -10,24 +10,37 @@ def adjacent_spaces(point):
 def valid_adjacent_spaces(point):
     return [p for p in adjacent_spaces(point) if p in grid]
 
-for part in (1,2):
+for part in (1,2,3):
     grid = load_file(part)
 
-    starts = [min(grid), max(grid)][:part]
-    palms = {k for k,v in grid.items() if v=="P"}
+    palms = [k for k,v in grid.items() if v=="P"]
 
-    costs = {p:1e80 for p in grid}
-    to_update = set()
-    for start in starts:
-        costs[start] = 0
-        to_update.update(valid_adjacent_spaces(start))
-    while to_update:
-        new_update = set()
-        for point in to_update:
-            adjs = valid_adjacent_spaces(point)
-            new_cost = min([costs[adj] + 1 for adj in adjs] or [1e8])
-            if new_cost < costs[point]:
-                costs[point] = new_cost
-                new_update.update(adjs)
-        to_update = new_update
-    print(max(costs[palm] for palm in palms))
+    all_costs = {}
+
+    if part < 3:
+        start_locs = [[min(grid),max(grid)][:part]]
+    else:
+        start_locs = [[palm] for palm in palms]
+
+    for starts in start_locs:
+        to_update = set()
+        costs = {p:1e80 for p in grid}
+        for start in starts:
+            all_costs[start] = costs
+            costs[start] = 0
+            to_update.update(valid_adjacent_spaces(start))
+        while to_update:
+            new_update = set()
+            for point in to_update:
+                adjs = valid_adjacent_spaces(point)
+                new_cost = min([costs[adj] + 1 for adj in adjs] or [1e8])
+                if new_cost < costs[point]:
+                    costs[point] = new_cost
+                    new_update.update(adjs)
+            to_update = new_update
+    if part < 3:
+        print(max(costs[palm] for palm in palms))
+    else:
+        points = [p for p,c in grid.items() if c=="."]
+        total_costs = {point:sum(all_costs[palm][point] for palm in palms) for point in points}
+        print(min(total_costs.values()))
