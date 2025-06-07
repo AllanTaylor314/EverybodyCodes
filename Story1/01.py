@@ -40,22 +40,6 @@ for a,b,c,x,y,z,m in lines:
 print(best)
 
 # PART 3
-def enit1(n, exp, mod):
-    loop_size = 1
-    score = n % mod
-    loop_sum = score
-    while score != 1:
-        score = score * n % mod
-        loop_sum += score
-        loop_size += 1
-        print(loop_size, loop_sum, score)
-    print(n, exp, mod,"sz", loop_size, "sm", loop_sum)
-    reps, rexp = divmod(exp, loop_size)
-    total = reps * loop_sum
-    exps = range(1, rexp+1)
-    total += sum(pow(n, e, mod) for e in exps)
-    return total
-
 def enit(n, exp, mod):
     score = 1
     seen = set()

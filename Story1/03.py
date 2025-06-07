@@ -59,7 +59,6 @@ print(days)
 # Fast P2
 days = 0
 total_size = 1
-total_offset = 0
 for size, offset in snail_loops:
     while (days - offset) % size != 0:
         days += total_size
@@ -77,7 +76,6 @@ snail_loops = [(loop_size(x,y), days_till_golden(x,y)) for x,y in snails]
 
 days = 0
 total_size = 1
-total_offset = 0
 for size, offset in snail_loops:
     while (days - offset) % size != 0:
         days += total_size
