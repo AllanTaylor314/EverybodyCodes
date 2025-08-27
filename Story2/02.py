@@ -1,4 +1,5 @@
 from itertools import count
+from time import perf_counter
 BOLTS = "RGB"
 
 def load_file(part):
@@ -88,6 +89,26 @@ class SegmentTree:
             else:
                 del self.right[index-self.left.count]
             self.count -= 1
+            # Self-cleaning & discarding unused nodes
+            if self.count <= 1:
+                if self.count == 1:
+                    self.value = self[0]
+                self.is_leaf = True
+                self.exists = True
+                del self.left
+                del self.right
+            elif self.left.is_leaf:
+                pass
+            elif self.left.left.count == 0:
+                self.left = self.left.right
+            elif self.left.right.count == 0:
+                self.left = self.left.left
+            elif self.right.is_leaf:
+                pass
+            elif self.right.left.count == 0:
+                self.right = self.right.right
+            elif self.right.right.count == 0:
+                self.right = self.right.left
     def __repr__(self):
         if self.is_leaf:
             return f"<ST>({self.value}, {self.exists})"
@@ -107,10 +128,12 @@ for i in count():
     del balloons[0]
 print(i)
 
+start_time = perf_counter()
 balloons = SegmentTree(RepeatedString(load_file(3), 100000))
+print("Build:", perf_counter() - start_time)
 for i in count():
     if i % 100000 == 0:
-        print(i, len(balloons))
+        print(i, len(balloons), perf_counter() - start_time, balloons.left.count, balloons.right.count)
     if not balloons:
         break
     bolt = BOLTS[i%len(BOLTS)]
@@ -119,3 +142,4 @@ for i in count():
         del balloons[cut]
     del balloons[0]
 print(i)
+print(perf_counter() - start_time)
