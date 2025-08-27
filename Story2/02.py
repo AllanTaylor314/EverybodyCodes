@@ -1,4 +1,4 @@
-from itertools import count
+from itertools import count, cycle
 from time import perf_counter
 BOLTS = "RGB"
 
@@ -53,10 +53,7 @@ class SegmentTree:
         self.is_leaf = self.count <= 1
         if self.is_leaf:
             if self.count:
-                self.exists = True
                 self.value = values[start]
-            else:
-                self.exists = False
         else:
             cut = start + (end-start) // 2
             self.left = SegmentTree(values, start, cut)
@@ -79,7 +76,6 @@ class SegmentTree:
             raise IndexError("Index out of range")
         if self.is_leaf:
             if self.exists:
-                self.exists = False
                 self.count = 0
             else:
                 raise IndexError("Already deleted leaf")
@@ -90,38 +86,40 @@ class SegmentTree:
                 del self.right[index-self.left.count]
             self.count -= 1
             # Self-cleaning & discarding unused nodes
-            if self.count <= 1:
-                if self.count == 1:
-                    self.value = self[0]
-                self.is_leaf = True
-                self.exists = True
-                del self.left
-                del self.right
-            elif self.left.is_leaf:
-                pass
-            elif self.left.left.count == 0:
-                self.left = self.left.right
-            elif self.left.right.count == 0:
-                self.left = self.left.left
-            elif self.right.is_leaf:
-                pass
-            elif self.right.left.count == 0:
-                self.right = self.right.right
-            elif self.right.right.count == 0:
-                self.right = self.right.left
+            if self.left.count == 0:
+                self._clone(self.right)
+            elif self.right.count == 0:
+                self._clone(self.left)
     def __repr__(self):
         if self.is_leaf:
             return f"<ST>({self.value}, {self.exists})"
         return f"<ST({self.count})>[{self.left},{self.right}]"
+    @property
+    def exists(self):
+        return self.count > 0
+    def _clone(self, source):
+        self.count = source.count
+        if self.is_leaf:
+            del self.value
+        else:
+            del self.left
+            del self.right
+        self.is_leaf = source.is_leaf
+        if source.is_leaf:
+            self.value = source.value
+        else:
+            self.left = source.left
+            self.right = source.right
+
 def load_file(part):
     with open(f"everybody_codes_e2_q02_p{part}.txt") as f:
         return f.read().strip()
 
 balloons = SegmentTree(RepeatedString(load_file(2), 100))
-for i in count():
+bolts = cycle(BOLTS)
+for i, bolt in enumerate(bolts):
     if not balloons:
         break
-    bolt = BOLTS[i%len(BOLTS)]
     if len(balloons) % 2 == 0 and balloons[0] == bolt:
         cut = len(balloons) // 2
         del balloons[cut]
@@ -131,12 +129,12 @@ print(i)
 start_time = perf_counter()
 balloons = SegmentTree(RepeatedString(load_file(3), 100000))
 print("Build:", perf_counter() - start_time)
-for i in count():
+bolts = cycle(BOLTS)
+for i, bolt in enumerate(bolts):
     if i % 100000 == 0:
         print(i, len(balloons), perf_counter() - start_time, balloons.left.count, balloons.right.count)
     if not balloons:
         break
-    bolt = BOLTS[i%len(BOLTS)]
     if len(balloons) % 2 == 0 and balloons[0] == bolt:
         cut = len(balloons) // 2
         del balloons[cut]
