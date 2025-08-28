@@ -111,10 +111,6 @@ class SegmentTree:
             self.left = source.left
             self.right = source.right
 
-def load_file(part):
-    with open(f"everybody_codes_e2_q02_p{part}.txt") as f:
-        return f.read().strip()
-
 balloons = SegmentTree(RepeatedString(load_file(2), 100))
 bolts = cycle(BOLTS)
 for i, bolt in enumerate(bolts):
