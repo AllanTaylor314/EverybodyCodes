@@ -1,5 +1,6 @@
 from itertools import count, cycle
 from time import perf_counter
+from collections import deque
 BOLTS = "RGB"
 
 def load_file(part):
@@ -120,6 +121,21 @@ for i, bolt in enumerate(bolts):
         cut = len(balloons) // 2
         del balloons[cut]
     del balloons[0]
+print(i)
+
+data = load_file(3) * 50000
+left = deque(data)
+right = deque(data)
+bolts = cycle(BOLTS)
+for i, bolt in enumerate(bolts):
+    if len(left) == 0 == len(right):
+        break
+    while len(left) < len(right):
+        left.append(right.popleft())
+    is_even = len(left) == len(right)
+    front = left.popleft()
+    if is_even and bolt == front:
+        right.popleft()
 print(i)
 
 start_time = perf_counter()
