@@ -85,4 +85,11 @@ for d in dice.values():
         for j, cell in enumerate(row):
             if len(cell) > 1:
                 all_possible_paths[i][j] = True
+
+with open("pretty_picture.txt","w") as f:
+    for row in all_possible_paths:
+        for cell in row:
+            print(end=" █"[cell], file=f)
+        print(file=f)
+
 print(sum(cell for row in all_possible_paths for cell in row))
