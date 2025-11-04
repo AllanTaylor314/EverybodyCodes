@@ -1,7 +1,9 @@
+from ast import literal_eval
+
 def load_file(part):
     with open(f"everybody_codes_e2025_q02_p{part}.txt") as f:
-        lines = f.read().splitlines()
-    return lines
+        line, = f.read().splitlines()
+    return literal_eval(line.split('=')[1])
 
 def add(cn1,cn2):
     X1,Y1 = cn1
@@ -16,7 +18,7 @@ def div(cn1,cn2):
     X2,Y2 = cn2
     return [int(X1 / X2), int(Y1 / Y2)]
 
-num = eval(load_file(1)[0].split('=')[1])
+num = load_file(1)
 res = [0,0]
 for _ in range(3):
     res = mul(res,res)
@@ -35,7 +37,7 @@ def test_point(point):
         return False
     return True
 
-top_left = eval(load_file(2)[0].split('=')[1])
+top_left = load_file(2)
 # top_left = [35300,-64910]
 bottom_right = add(top_left, [1000,1000])
 count = 0
@@ -51,18 +53,19 @@ for y in range(ty,by+1,10):
     print()
 print(count)
 
-top_left = eval(load_file(3)[0].split('=')[1])
+top_left = load_file(3)
 # top_left = [35300,-64910]
 bottom_right = add(top_left, [1000,1000])
 count = 0
 lx,ty = top_left
 rx,by = bottom_right
-for y in range(ty,by+1,1):
-    for x in range(lx,rx+1,1):
-        if test_point([x,y]):
-            count += 1
-    #         print(end='X')
-    #     else:
-    #         print(end='.')
-    # print()
+with open('2.egg.txt','w') as f:
+    for y in range(ty,by+1,1):
+        for x in range(lx,rx+1,1):
+            if test_point([x,y]):
+                count += 1
+                print(end='x',file=f)
+            else:
+                print(end='·',file=f)
+        print(file=f,flush=True)
 print(count)
