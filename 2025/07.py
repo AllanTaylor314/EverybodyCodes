@@ -7,7 +7,11 @@ def rule_to_pairs(rule):
     return frozenset(i + o for o in os)
 
 
-def rules_to_allowed_follow_ups(rules):
+def rules_to_pairs(rules):
+    return {p for rule in rules for p in rule_to_pairs(rule)}
+
+
+def rules_to_mapping(rules):
     res = {}
     for rule in rules:
         i, o_str = rule.split(" > ")
@@ -16,10 +20,10 @@ def rules_to_allowed_follow_ups(rules):
     return res
 
 
-def filter_prefixes(prefixes):
+def filter_prefixes(prefixes, pairs):
     new = []
     for p in sorted(prefixes, key=len):
-        if not any(p.startswith(n) for n in new):
+        if not any(p.startswith(n) for n in new) and meets_pairs(p, pairs):
             new.append(p)
     return new
 
@@ -38,7 +42,7 @@ def meets_pairs(name, pairs):
     return True
 
 
-def count_options(prefix, mapping):
+def count_all_options(prefixes, mapping):
     @cache
     def rec(last_char, length):
         if length > 11:
@@ -49,7 +53,7 @@ def count_options(prefix, mapping):
             total += rec(char, length + 1)
         return total
 
-    return rec(prefix[-1], len(prefix))
+    return sum(rec(prefix[-1], len(prefix)) for prefix in prefixes)
 
 
 names, rules = load_file(1)
@@ -61,7 +65,7 @@ for name in names:
         break
 
 names, rules = load_file(2)
-pairs = {p for rule in rules for p in rule_to_pairs(rule)}
+pairs = rules_to_pairs(rules)
 
 total = 0
 for i, name in enumerate(names, 1):
@@ -70,11 +74,7 @@ for i, name in enumerate(names, 1):
 print(total)
 
 prefixes, rules = load_file(3)
-prefixes = filter_prefixes(prefixes)
-mapping = rules_to_allowed_follow_ups(rules)
-pairs = {p for rule in rules for p in rule_to_pairs(rule)}
-total = 0
-for prefix in prefixes:
-    if meets_pairs(prefix, pairs):
-        total += count_options(prefix, mapping)
-print(total)
+pairs = rules_to_pairs(rules)
+mapping = rules_to_mapping(rules)
+prefixes = filter_prefixes(prefixes, pairs)
+print(count_all_options(prefixes, mapping))
