@@ -43,6 +43,10 @@ def slow_solve(ducks):
                 break
     return n
 
+def mid_solve(ducks):
+    for n in count():
+        if not phase1(ducks):
+            return n + fast_solve(ducks)
 
 def fast_solve(ducks):  # Given strictly ascending
     target = sum(ducks) // len(ducks)
@@ -59,9 +63,7 @@ for _ in range(10):
         phase2(ducks)
 print(checksum(ducks))
 
-print(slow_solve(load_file(2)))
-# print(fast_solve(load_file(2)))
-# print(slow_solve(load_file(3)))
+print(mid_solve(load_file(2)))
 print(fast_solve(load_file(3)))
 
 # Why is part 3 strictly ascending? I guess it makes it easier
