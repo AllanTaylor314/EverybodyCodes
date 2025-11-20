@@ -10,6 +10,8 @@ dial = [1] + nums[::2] + nums[1::2][::-1]
 print(dial[2025%len(dial)])
 
 def value(ranges,index):
+    if index < 0:
+        return
     for a,b in ranges:
         size = b - a + 1
         if index < size:
@@ -24,9 +26,9 @@ def range_size(rng):
 ranges = load_file(2)
 wheel_size = 1 + sum(map(range_size,ranges))
 target_position = 20252025 % wheel_size
-print(value(ranges[::2],target_position-1) or value(ranges[1::2],wheel_size-target_position-1))
+print(value(ranges[::2],target_position-1) or value(ranges[1::2],wheel_size-target_position-1) or 1)
 
 ranges = load_file(3)
 wheel_size = 1 + sum(map(range_size,ranges))
 target_position = 202520252025 % wheel_size
-print(value(ranges[::2],target_position-1) or value(ranges[1::2],wheel_size-target_position-1))
+print(value(ranges[::2],target_position-1) or value(ranges[1::2],wheel_size-target_position-1) or 1)

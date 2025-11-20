@@ -4,6 +4,8 @@ def load_file(part):
     return [tuple(map(int,line.split('-'))) for line in lines]
 
 def value(ranges,index):
+    if index < 0:
+        return
     for p in ranges:
         size = p[-1] - p[0] + 1
         if index < size:
@@ -19,6 +21,6 @@ def solve(part):
     ranges = load_file(part)
     wheel_size = 1 + sum(map(range_size,ranges))
     target_position = num_iters % wheel_size
-    return value(ranges[::2],target_position-1) or value(ranges[1::2],wheel_size-target_position-1)
+    return value(ranges[::2],target_position-1) or value(ranges[1::2],wheel_size-target_position-1) or 1
 
 print(*map(solve,(1,2,3)))
