@@ -5,9 +5,7 @@ from itertools import chain
 def load_file(part):
     with open(f"everybody_codes_e2025_q17_p{part}.txt") as f:
         lines = f.read().splitlines()
-    return lines#list(map(int,lines))
-    #     line ,= f.read().splitlines()
-    # return list(map(int,line.split(',')))
+    return lines
 
 
 def dist2(a,b):
@@ -54,7 +52,7 @@ def adj(cell):
 
 # search for a line to the left and a line to the right (still needs to zig zag a bit)
 radius = 5
-def p3(radius):
+def p3(radius, plot=False):
     states = defaultdict(lambda:(10**10,None))
     min_time = 30 * radius
     states[start] = (0,None)
@@ -96,20 +94,23 @@ def p3(radius):
         for l in left_paths:
             for a in adj(l):
                 if a in right_paths:
-                    yield states[l][0] + states[a][0], (states[l][1], states[a][1])
+                    yield states[l][0] + states[a][0], (l, a)
         yield float('inf'), (None, None)
     best, (pos1, pos2) = min(gen_possible_weights())
-    # plotting_grid = [[cell if destruction_radius.get((i,j),0) >= radius else '.' for j in enumerate(row)] for i,row in enumerate(grid)]
-    # for i,j in chain(trace_path(pos1),trace_path(pos2)):
-    #     plotting_grid[i][j] = '#'
-    # for row in plotting_grid:
-    #     print(*row,sep='')
+    # print(destruction_radius)
+    if plot:
+        plotting_grid = [[cell if destruction_radius.get((i,j),0) >= radius else '.' for j,cell in enumerate(row)] for i,row in enumerate(grid)]
+        for i,j in chain(trace_path(pos1),trace_path(pos2)):
+            plotting_grid[i][j] = ' '
+        for row in plotting_grid:
+            print(*row,sep='')
     return best
 
 for radius in range(1,max(destruction_radius.values())):
     res = p3(radius)
     time = (radius+1)*30
-    print(radius,time,res)
     if res < time:
+        p3(radius,True)
         print(radius * res)
         break
+    print('#',radius,time,res)
