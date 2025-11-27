@@ -1,6 +1,10 @@
 import re
 import z3
+from itertools import batched
 
+PLOT = True
+
+BLOCK_CHARS = " █"
 
 HEADER = re.compile(r"^Plant (\d+) with thickness (-?\d+):$")
 FREE_ROW = re.compile(r"- free branch with thickness (-?\d+)")
@@ -100,6 +104,25 @@ opt.add(out_energy == expr)
 h = opt.maximize(out_energy)
 opt.check()
 best = opt.upper(h).py_value()
+best_model = opt.model()
+
+
+def plot_bit_list(bit_list):
+    for row in batched(bit_list, 9):
+        print(*(BLOCK_CHARS[bit] * 2 for bit in row), sep="")
+
+
+def plot_all_bit_lists(bit_lists, num_cols=10):
+    row_sep = "+" + ("-" * 9 * 2 + "+") * num_cols
+    print(row_sep)
+    for bls in batched(bit_lists, num_cols):
+        for groups in zip(*(batched(bl, 9) for bl in bls)):
+            print(end="|")
+            for row in groups:
+                print(*(BLOCK_CHARS[bit] * 2 for bit in row), sep="", end="|")
+            print()
+        print(row_sep)
+
 
 total = 0
 for bit_list in bit_lists:
@@ -110,4 +133,7 @@ for bit_list in bit_lists:
     res = m[out_energy].py_value()
     if res:
         total += best - res
+if PLOT:
+    plot_all_bit_lists(bit_lists)
+    plot_bit_list([best_model[b].py_value() for b in bits])
 print(total)
