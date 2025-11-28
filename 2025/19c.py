@@ -1,6 +1,5 @@
-from bisect import bisect_left, bisect_right
-from collections import defaultdict, deque
-
+from bisect import bisect_right
+from collections import defaultdict
 
 def step(pos,next_gap=None): # new pos, cost (flaps)
     i,j = pos
@@ -75,4 +74,4 @@ for part in (1,2,3):
         gap_size = i_gap - prev_i
         ranges = intersect_ranges((reachable_range(r, gap_size) for r in ranges), gaps[i_gap])
         prev_i = i_gap
-    print(calc_cost((prev_i, ranges[0][0])) or calc_cost((prev_i, ranges[0][0]+1)))
+    print(calc_cost((prev_i, next((j for l,u in ranges for j in range(l,u+1) if prev_i%2==j%2)))))
