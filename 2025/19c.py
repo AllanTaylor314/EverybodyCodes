@@ -1,4 +1,3 @@
-from bisect import bisect_right
 from collections import defaultdict
 
 def reachable_range(current_range, distance):
@@ -35,6 +34,9 @@ def union_ranges(rngs):
             out.append(rng)
     return out
 
+def remove_impassable_ranges(rngs, i):
+    return list(filter(lambda p: p[0] <= p[1], ((a+(a%2!=i%2),b-(b%2!=i%2)) for a,b in rngs)))
+
 def intersect_ranges(rngs1, rngs2):
     return union_ranges(filter(None,(range_intersect(rng1,rng2) for rng1 in rngs1 for rng2 in rngs2)))
 
@@ -59,6 +61,6 @@ for part in (1,2,3):
     prev_i = 0
     ranges = [(0,0)]
     for i_gap in i_gaps:
-        ranges = intersect_ranges((reachable_range(r, i_gap - prev_i) for r in ranges), gaps[i_gap])
+        ranges = remove_impassable_ranges(intersect_ranges((reachable_range(r, i_gap - prev_i) for r in ranges), gaps[i_gap]), i_gap)
         prev_i = i_gap
-    print(calc_cost((prev_i, next((j for l,u in ranges for j in range(l,u+1) if prev_i%2==j%2)))))
+    print(calc_cost((prev_i, ranges[0][0])))
